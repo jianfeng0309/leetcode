@@ -3738,6 +3738,8 @@ public class Solution {
     public int[] kthSmallestPrimeFraction(int[] A, int K) {
         int len = A.length;
         int aa = 5;
+        int bb = 6;
+        int cc = 7;
         return null;
     }
 
