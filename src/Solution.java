@@ -3736,11 +3736,20 @@ public class Solution {
     }
 
     public int[] kthSmallestPrimeFraction(int[] A, int K) {
-        int len = A.length;
-        int aa = 5;
-        int bb = 6;
-        int cc = 7;
-        return null;
+        Queue<int[]> pq = new PriorityQueue<>(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return A[o1[0]] * A[o2[1]] - A[o1[1]] * A[o2[0]];
+            }
+        });
+
+        int[] Ksmallest;
+        pq.add(new int[]{0, A.length - 1});
+        while(K-- > 0) {
+            Ksmallest = pq.poll();
+        }
+
+        return new int[]{A[pos[0]], A[pos[1]]};
     }
 
     public static void main(String[] args) {
@@ -3758,7 +3767,6 @@ public class Solution {
         TreeNode node10 = new TreeNode(10);
         TreeNode node11 = new TreeNode(11);
 
-
         node1.left = node2;
         node1.right = node3;
         node2.left = node4;
@@ -3769,7 +3777,6 @@ public class Solution {
         node6.left = node9;
         node5.left = node11;
         node6.right = node10;
-
 
         Map<Integer, Integer> map = new HashMap<>();
         map.remove(5);
