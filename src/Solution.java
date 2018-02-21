@@ -3744,11 +3744,18 @@ public class Solution {
         });
 
         int[] Ksmallest;
-        pq.add(new int[]{0, A.length - 1});
-        while(K-- > 0) {
-            Ksmallest = pq.poll();
+        for(int i = 0; i < A.length - 1; i++) {
+            pq.add(new int[]{i, A.length - 1});
         }
 
+        while(K-- > 0) {
+            Ksmallest = pq.poll();
+            if(Ksmallest[1] - Ksmallest[0] > 1) {
+                pq.add(new int[]{Ksmallest[0], Ksmallest[1] - 1});
+            }
+        }
+
+        int[] pos = pq.peek();
         return new int[]{A[pos[0]], A[pos[1]]};
     }
 
