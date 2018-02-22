@@ -3759,6 +3759,42 @@ public class Solution {
         return new int[]{A[pos[0]], A[pos[1]]};
     }
 
+    class Node {
+        // the value of this node
+        int val;
+        // duplication of this node, 1 for single copy, not 1 dup
+        int dup;
+        // how many nodes that are smaller than the value of this node
+        int count;
+
+        public Node (int val) {
+            this.val = val;
+            dup = 1;
+            count = 0;
+        }
+    }
+
+    Node root = null;
+
+    private Node buildBST(int num, Node node, int preSum, int[] res, int index) {
+        if(node == null) {
+            node = new Node(num);
+            res[index] = preSum;
+            return node;
+        } else if(node.val == num) {
+            node.dup++;
+            res[index] = preSum;
+            return node;
+        } else if(node.val > num) {
+            preSum = node.dup + node.count;
+            return buildBST(num, node.)
+        } else
+    }
+
+    public List<Integer> countSmaller(int[] nums) {
+
+    }
+
     public static void main(String[] args) {
 
         Solution solution = new Solution();
