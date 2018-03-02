@@ -1597,7 +1597,6 @@ public class Solution {
         return costs[n - 1][idx1];
     }
 
-    private static final int M = 1000000000 + 7;
     public int numDecodings(String s) {
         int len = s.length();
         long[] dp = new long[len + 1];
@@ -3774,25 +3773,98 @@ public class Solution {
         }
     }
 
-    Node root = null;
-
-    private Node buildBST(int num, Node node, int preSum, int[] res, int index) {
-        if(node == null) {
-            node = new Node(num);
-            res[index] = preSum;
-            return node;
-        } else if(node.val == num) {
-            node.dup++;
-            res[index] = preSum;
-            return node;
-        } else if(node.val > num) {
-            preSum = node.dup + node.count;
-            return buildBST(num, node.)
-        } else
+    public int rotatedDigits(int N) {
+        int count = 0;
+        for(int i = 1; i <= N; i++) {
+            if(isValid(i)) {
+                count++;
+            }
+        }
+        return count;
     }
 
-    public List<Integer> countSmaller(int[] nums) {
+    private boolean isValid(int num) {
+        String original = String.valueOf(num);
+        StringBuilder sb = new StringBuilder();
+        for(char c : original.toCharArray()) {
+            if (c == '0' || c == '1' || c== '8') {
+                sb.append(c);
+            } else if(c == '2') {
+                sb.append('5');
+            } else if(c == '5') {
+                sb.append('2');
+            } else if(c == '6') {
+                sb.append('9');
+            } else if(c == '9') {
+                sb.append('6');
+            } else {
+                return false;
+            }
+        }
+        return !sb.toString().equals(original);
+    }
 
+    public boolean escapeGhosts(int[][] ghosts, int[] target) {
+        int OurDistance = Math.abs(target[0]) + Math.abs(target[1]);
+        for(int [] ghost : ghosts) {
+            int ghostDistance = Math.abs(target[0] - ghost[0]) + Math.abs(target[1] - ghost[1]);
+            if(ghostDistance <= OurDistance) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public String customSortString(String s, String t) {
+        if(s == null || s.length() == 0 || t == null || t.length() == 0) return t;
+
+        Map<Character, Integer> charToNum = new HashMap<>();
+        Map<Integer, Character> numToChar = new HashMap<>();
+        for(int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            charToNum.put(c, i);
+            numToChar.put(i, c);
+        }
+
+        List<Integer> list = new ArrayList<>();
+        StringBuilder res = new StringBuilder();
+
+        for(int i = 0; i < t.length(); i++) {
+            char tc = t.charAt(i);
+            if(charToNum.containsKey(tc)) {
+                list.add(charToNum.get(tc));
+            } else {
+                res.append(tc);
+            }
+        }
+
+        Collections.sort(list);
+
+        for(int num : list) {
+            res.append(numToChar.get(num));
+        }
+        return res.toString();
+
+    }
+    
+    private static final int M = 1000000000 + 7;
+    public int numTilings(int N) {
+        if(N == 1) {
+            return 1;
+        } else if(N == 2) {
+            return 2;
+        }
+        long[] fulldp = new long[N];
+        long[] omitdp = new long[N];
+        fulldp[0] = 1;
+        fulldp[1] = 2;
+        omitdp[1] = 2;
+
+        for(int i = 2; i < N; i++) {
+            fulldp[i] = (fulldp[i - 2] + fulldp[i - 1]) % M + omitdp[i - 1] % M;
+            omitdp[i] = omitdp[i - 1] % M + (fulldp[i - 2] * 2) % M;
+        }
+        return (int)(fulldp[N - 1] % M);
     }
 
     public static void main(String[] args) {
@@ -3855,6 +3927,9 @@ public class Solution {
         List<Integer> order = Arrays.asList(0, 1, 2);
         List<Integer> nums = Arrays.asList(1,5,9,1);
 
-        System.out.println(solution.kthSmallestPrimeFraction(rabbits, 8));
+        String s = "awjeuldzxknyocsrfpvq";
+        String t = "itnmbfynwuktoeulvfrjowqqnburnvendrafgfcgjiaovffzoxocsonpxmuqfhluzhaiuvldldvrcvofsfnaqfxrdnkvoguxqbke";
+
+        System.out.println(solution.numTilings(40));
     }
 }
