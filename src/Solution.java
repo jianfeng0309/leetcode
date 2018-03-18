@@ -3846,7 +3846,7 @@ public class Solution {
         return res.toString();
 
     }
-     c xx
+
     private static final int M = 1000000000 + 7;
     public int numTilings(int N) {
         if(N == 1) {
@@ -3866,6 +3866,84 @@ public class Solution {
         }
         return (int)(fulldp[N - 1] % M);
     }
+
+    public boolean rotateString(String A, String B) {
+        if(A == null && B == null){
+            return true;
+        } else if(A == null || B == null) {
+            return false;
+        }
+        String AA = A + A;
+        int len = A.length();
+        for(int i = 0; i < len; i++) {
+            if(B.equals(AA.substring(i, i + len))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public List<List<Integer>> allPathsSourceTarget(int[][] graph) {
+        List<List<Integer>> res = new ArrayList<>();
+        if(graph == null || graph.length == 0 || graph[0].length == 0) {
+            return res;
+        }
+        int last = graph.length - 1;
+        List<Integer> path = new ArrayList<>();
+        path.add(0);
+        allPathHelper(res, 0, path, last, graph);
+        return res;
+    }
+
+    private void allPathHelper(List<List<Integer>> res, int prev, List<Integer> path, int last, int[][] graph) {
+        if(prev == last) {
+            res.add(new ArrayList<>(path));
+            return;
+        }
+
+        for(int i = 0; i < graph[prev].length; i++) {
+            int nextNode = graph[prev][i];
+            path.add(nextNode);
+            allPathHelper(res, nextNode, path, last, graph);
+            path.remove(path.size() - 1);
+        }
+    }
+
+    public double champagneTower(int poured, int query_row, int query_glass) {
+        List<List<Double>> in = new ArrayList<>();
+        List<List<Double>> out = new ArrayList<>();
+
+        List<Double> inZero = new ArrayList<>();
+        inZero.add((double)poured);
+        List<Double> outZero = new ArrayList<>();
+        outZero.add(Math.max(0.0, (double)poured - 1));
+        in.add(inZero);
+        out.add(outZero);
+
+        if(query_row == 0 && query_glass == 0) {
+            return Math.min(1.0, (double)poured);
+        }
+
+        for(int i = 1; i <= query_row; i++) {
+            champangeTowerHelper(i, in, out);
+        }
+        return Math.min(1, in.get(query_row).get(query_glass));
+    }
+
+    private void champangeTowerHelper(int row, List<List<Double>> in, List<List<Double>> out) {
+        List<Double> crtIn = new ArrayList<>();
+        List<Double> crtOut = new ArrayList<>();
+        for(int i = 0; i <= row; i++) {
+            double left = i - 1 >= 0 ? out.get(row - 1).get(i - 1)/ 2 : 0;
+            double right = i < out.get(row - 1).size() ? out.get(row - 1).get(i) / 2 : 0;
+            crtIn.add(left + right);
+            crtOut.add(Math.max(left + right - 1, 0.0));
+        }
+        in.add(crtIn);
+        out.add(crtOut);
+    }
+
+    
 
     public static void main(String[] args) {
 
@@ -3930,6 +4008,8 @@ public class Solution {
         String s = "awjeuldzxknyocsrfpvq";
         String t = "itnmbfynwuktoeulvfrjowqqnburnvendrafgfcgjiaovffzoxocsonpxmuqfhluzhaiuvldldvrcvofsfnaqfxrdnkvoguxqbke";
 
-        System.out.println(solution.numTilings(40));
+        int[][] graph = new int[][]{{1, 2}, {3}, {3}, {}};
+        int[] num = new int[]{2,3,1,4,0};
+        System.out.println(solution.amazingNum(num));
     }
 }
