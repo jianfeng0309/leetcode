@@ -1,108 +1,87 @@
 import com.sun.org.apache.xerces.internal.util.SymbolHash;
 
 import java.util.HashMap;
+import java.util.Map;
 
 class LRUCache {
-    class DoubleLinkedList {
-        int val;
-        int key;
-        DoubleLinkedList prev = null;
-        DoubleLinkedList next = null;
-        public DoubleLinkedList(int key, int val) {
+    class Node {
+        Node prev = null, next = null;
+        int key, val;
+        public Node (int key, int val) {
             this.key = key;
             this.val = val;
         }
     }
 
-    int size = 0;
-    int capacity;
-    HashMap<Integer, DoubleLinkedList> map = new HashMap<>();
-    DoubleLinkedList dommy = new DoubleLinkedList(0, -1);
-    DoubleLinkedList dommyTail = new DoubleLinkedList(0, -1);
+    Node dummyHead = new Node(Integer.MIN_VALUE, Integer.MIN_VALUE),
+            dummyTail = new Node(Integer.MAX_VALUE, Integer.MAX_VALUE);
+
+    private int capacity = 0, size = 0;
+    Map<Integer, Node> map = new HashMap<>();
 
     public LRUCache(int capacity) {
+        dummyHead.next = dummyTail;
+        dummyTail.prev = dummyHead;
         this.capacity = capacity;
-        dommy.next = dommyTail;
-        dommyTail.prev = dommy;
     }
 
     public int get(int key) {
-        if(this.capacity == 0) return -1;
         if(map.containsKey(key)) {
-            DoubleLinkedList ele = map.get(key);
-            remove(ele);
-            appendAndUpdate(key, ele);
-            return map.get(key).val;
+            Node node = map.get(key);
+            removeNode(node);
+            appendFirst(node);
+            return node.val;
         } else {
-            return -1;
+            return - 1;
         }
+    }
+
+    private void appendFirst(Node node) {
+        map.put(node.key, node);
+        Node ori = dummyHead.next;
+        node.prev = dummyHead;
+        node.next = ori;
+        dummyHead.next = node;
+        ori.prev = node;
+    }
+
+    private void evictLast(){
+        Node last = dummyTail.prev;
+        map.remove(last.key);
+        last.prev.next = last.next;
+        last.next.prev = last.prev;
+    }
+
+    private void removeNode(Node node) {
+        map.remove(node.key);
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
     }
 
     public void put(int key, int value) {
-        if(capacity == 0) return;
-
-        // size vs capacity
+        Node newNode = new Node(key, value);
         if(size == capacity) {
             if(map.containsKey(key)) {
-                // no need to delete tail
-                DoubleLinkedList ele = map.get(key);
-                remove(ele);
-                DoubleLinkedList newElement = new DoubleLinkedList(key, value);
-                appendAndUpdate(key, newElement);
+                Node node = map.get(key);
+                removeNode(node);
+                appendFirst(newNode);
             } else {
-                // delete tail, append head
-                DoubleLinkedList newElement = new DoubleLinkedList(key, value);
-                appendAndUpdate(key, newElement);
-                deleteTail();
+                appendFirst(newNode);
+                evictLast();
             }
-
         } else {
-            // key exist or not
             if(map.containsKey(key)) {
-                // remove element, update and append head
-                DoubleLinkedList ele = map.get(key);
-                remove(ele);
-                DoubleLinkedList newElement = new DoubleLinkedList(key, value);
-                appendAndUpdate(key, newElement);
+                Node node = map.get(key);
+                removeNode(node);
+                appendFirst(newNode);
             } else {
-                // just append head and size++;
-                DoubleLinkedList newElement = new DoubleLinkedList(key, value);
-                appendAndUpdate(key, newElement);
-                size += 1;
+                size++;
+                appendFirst(newNode);
             }
         }
     }
 
-    private void remove(DoubleLinkedList ele) {
-        DoubleLinkedList prev = ele.prev, next = ele.next;
-        prev.next = next;
-        next.prev = prev;
-    }
 
-    private void appendAndUpdate(int key, DoubleLinkedList ele) {
-        map.put(key, ele);
-        DoubleLinkedList head = dommy.next;
-        ele.prev = dommy;
-        ele.next = head;
-        head.prev = ele;
-        dommy.next = ele;
-    }
-
-    private void deleteTail() {
-        DoubleLinkedList tail = dommyTail.prev, tailPrev = tail.prev;
-        map.remove(tail.key);
-        tailPrev.next = dommyTail;
-        dommyTail.prev = tailPrev;
-    }
-
-    public static void main(String[] args) {
-        LRUCache lruCache = new LRUCache(2);
-        lruCache.put(1, 1);
-        lruCache.put(2, 2);
-        System.out.println(lruCache.get(1));
-        lruCache.put(3, 3);
-        System.out.println(lruCache.get(2));
-    }
 }
 
 /**
